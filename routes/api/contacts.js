@@ -1,25 +1,28 @@
-const express = require('express')
+const express = require("express");
+const contactsService = require("../../models/contacts");
+const { validation } = require("../../middlewares");
+const controller = require("../../controllers/contacts-controller");
+const schema = require("../../schemas/contacts");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/", async (req, res, next) => {
+  const result = await contactsService.listContacts();
+  res.json(result);
+});
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/", controller.getContactsAll);
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/:contactId", controller.getContactById);
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post("/", validation(schema.schemaAddContact), controller.addContact);
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.delete("/:contactId", controller.removeContact);
 
-module.exports = router
+router.put(
+  "/:contactId",
+  validation(schema.schemaUpdateContact),
+  controller.updateContact
+);
+
+module.exports = router;
