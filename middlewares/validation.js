@@ -1,16 +1,16 @@
-const createError = require("http-errors");
+const { HttpError } = require("../helpers");
 
-const validation = (schema) => {
-  return (req, res, next) => {
-    if (Object.keys(req.body).length === 0) {
-      return next(createError(400, "Missing fields"));
-    }
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return next(createError(400, error.message));
-    }
-    next();
-  };
+const validation = (schema) => (req, res, next) => {
+  const { body } = req;
+
+  const { error } = schema.validate(body);
+
+  if (error) {
+    const err = new HttpError(400, error.message);
+    next(err);
+  }
+
+  next();
 };
 
 module.exports = validation;
